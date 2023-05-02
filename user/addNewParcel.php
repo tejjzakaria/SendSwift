@@ -228,7 +228,14 @@ if(isset($_POST['submit'])) {
               </li>
             </ul>
           </li>
-
+          <li class="menu-item <?php if (basename($_SERVER['PHP_SELF']) == 'paymentsHistory.php') {
+            echo 'active';
+          } ?>">
+            <a href="paymentsHistory.php" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-dollar"></i>
+              <div data-i18n="Analytics">Payments</div>
+            </a>
+          </li>
           <!-- Support -->
           <li class="menu-item <?php if (basename($_SERVER['PHP_SELF']) == 'support.php') {
             echo 'active';

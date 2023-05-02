@@ -9,7 +9,7 @@ session_start();
 
 // Get user data from database
 $userID = $_SESSION['userID'];
-$sql = "SELECT * FROM users WHERE id='$userID'";
+$sql = "SELECT * FROM admin WHERE id='$userID'";
 $result = mysqli_query($conn, $sql);
 $userData = mysqli_fetch_assoc($result);
 
@@ -194,6 +194,35 @@ $userData = mysqli_fetch_assoc($result);
             </a>
           </li>
 
+
+          <li class="menu-item <?php if (basename($_SERVER['PHP_SELF']) == 'paymentsHistory.php' || basename($_SERVER['PHP_SELF']) == 'addNewPayment.php') {
+            echo 'active';
+          } ?> <?php if (basename($_SERVER['PHP_SELF']) == 'paymentsHistory.php' || basename($_SERVER['PHP_SELF']) == 'addNewPayment.php') {
+              echo 'open';
+            } ?>">
+            <a href="javascript:void(0)" class="menu-link menu-toggle">
+              <i class="menu-icon tf-icons bx bx-wallet"></i>
+              <div data-i18n="User interface">Payments</div>
+            </a>
+            <ul class="menu-sub">
+              <li class="menu-item <?php if (basename($_SERVER['PHP_SELF']) == 'paymentsHistory.php') {
+                echo 'active';
+              } ?>">
+                <a href="paymentsHistory.php" class="menu-link">
+                  <div data-i18n="Accordion">Payments History</div>
+                </a>
+              </li>
+              <li class="menu-item <?php if (basename($_SERVER['PHP_SELF']) == 'addNewPayment.php') {
+                echo 'active';
+              } ?>">
+                <a href="addNewPayment.php" class="menu-link">
+                  <div data-i18n="Alerts">Add new</div>
+                </a>
+              </li>
+            </ul>
+          </li>
+          
+
           <!-- Support -->
           <li class="menu-item <?php if (basename($_SERVER['PHP_SELF']) == 'support.php') {
             echo 'active';
@@ -259,8 +288,8 @@ $userData = mysqli_fetch_assoc($result);
                             </div>
                           </div>
                           <div class="flex-grow-1">
-                            <span class="fw-semibold d-block"><?php echo $userData['fullName']; ?></span>
-                            <small class="text-muted"><?php echo $userData['businessName']; ?></small>
+                            <span class="fw-semibold d-block"><?php echo $userData['username']; ?></span>
+                            <small class="text-muted"><?php echo $userData['email']; ?></small>
                           </div>
                         </div>
                       </a>
@@ -297,7 +326,98 @@ $userData = mysqli_fetch_assoc($result);
           <!-- Content wrapper -->
           <div class="content-wrapper">
             <!-- Content -->
+            <div class="container-xxl flex-grow-1 container-p-y">
+              <div class="col-md-6 col-lg-4 mb-3" style="width: 100%;">
+                    <div class="card text-center">
+                      <div class="card-header">Support</div>
+                      <div class="card-body">
+                        <p class="card-text">If you're experiencing any issues or problems while using our online platform, don't worry, we've got you covered. Our customer support team is available to help you via WhatsApp. All you need to do is send a message to our WhatsApp support number, and one of our agents will get back to you as soon as possible to assist you with your query. Our dedicated support team is committed to resolving any issues you might encounter, and we strive to provide you with a hassle-free and seamless user experience. So, feel free to contact us via WhatsApp, and we'll be happy to help you out.</p>
+                        <a href="javascript:void(0)" class="btn btn-primary" target="_blank">CONTACT US VIA WHATSAPP HERE</a>
+                      </div>
+                      <div class="card-footer text-muted">Posted by admin</div>
+                    </div>
+              </div>
+              <div class="row">
+                <div class="col-md mb-4 mb-md-0">
+                  <small class="text-light fw-semibold">Frequently Asked Questions</small>
+                  <div class="accordion mt-3" id="accordionExample">
+                    <div class="card accordion-item active">
+                      <h2 class="accordion-header" id="headingOne">
+                        <button
+                          type="button"
+                          class="accordion-button"
+                          data-bs-toggle="collapse"
+                          data-bs-target="#accordionOne"
+                          aria-expanded="true"
+                          aria-controls="accordionOne"
+                        >
+                        What is SendSwift?
+                        </button>
+                      </h2>
 
+                      <div
+                        id="accordionOne"
+                        class="accordion-collapse collapse show"
+                        data-bs-parent="#accordionExample"
+                      >
+                        <div class="accordion-body">
+                        SendSwift is an online platform that offers a simple and effective solution for managing deliveries. It allows you to track packages, get real-time notifications, and communicate with your customers all in one place.
+                        </div>
+                      </div>
+                    </div>
+                    <div class="card accordion-item">
+                      <h2 class="accordion-header" id="headingTwo">
+                        <button
+                          type="button"
+                          class="accordion-button collapsed"
+                          data-bs-toggle="collapse"
+                          data-bs-target="#accordionTwo"
+                          aria-expanded="false"
+                          aria-controls="accordionTwo"
+                        >
+                        What are the benefits of using SendSwift?
+                        </button>
+                      </h2>
+                      <div
+                        id="accordionTwo"
+                        class="accordion-collapse collapse"
+                        aria-labelledby="headingTwo"
+                        data-bs-parent="#accordionExample"
+                      >
+                        <div class="accordion-body">
+                        The benefits of using SendSwift include time savings, increased efficiency, and reduced costs. By using SendSwift, you can manage your deliveries more easily, stay informed of delivery status, and provide better customer service.
+                        </div>
+                      </div>
+                    </div>
+                    <div class="card accordion-item">
+                      <h2 class="accordion-header" id="headingThree">
+                        <button
+                          type="button"
+                          class="accordion-button collapsed"
+                          data-bs-toggle="collapse"
+                          data-bs-target="#accordionThree"
+                          aria-expanded="false"
+                          aria-controls="accordionThree"
+                        >
+                        How do I get started with SendSwift?
+                        </button>
+                      </h2>
+                      <div
+                        id="accordionThree"
+                        class="accordion-collapse collapse"
+                        aria-labelledby="headingThree"
+                        data-bs-parent="#accordionExample"
+                      >
+                        <div class="accordion-body">
+                        To get started with SendSwift, you'll need to sign up for an account. Once your account is set up, you can start creating shipments and managing your deliveries right away.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+              </div>
+            </div>
             
             <!-- / Content -->
             

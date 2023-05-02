@@ -33,7 +33,7 @@ if(isset($_POST['submit'])) {
     $sql = "UPDATE users SET email='$email', password='$password', username='$username', fullName='$fullName', idNumber='$idNumber', phoneNumber='$phoneNumber', businessName='$businessName', city='$city', address='$address', websiteLink='$websiteLink', bankName='$bankName', accountNumber='$accountNumber' WHERE id='$userID'";
     if (mysqli_query($conn, $sql)) {
       
-        header("Location: profileUpdateSuccess.php" );
+        header("Location: profileUpdatedSuccess.php" );
     } else {
         echo "Error: " . $sql . "<br>" . mysqli_error($conn);
     }
@@ -350,7 +350,7 @@ if(isset($_POST['submit'])) {
                     
                   </ul>
                   <div class="card mb-4">
-                  
+                  <p class='alert alert-success'>Update Successful</p>
                     <h5 class="card-header">Profile Details</h5>
                     <!-- Account -->
                     
@@ -366,12 +366,12 @@ if(isset($_POST['submit'])) {
                               id="fullName"
                               name="fullName"
                               value="<?php echo $userData['fullName']; ?>"
-                              required
+                              
                             />
                           </div>
                           <div class="mb-3 col-md-6">
                             <label for="lastName" class="form-label">Username</label>
-                            <input class="form-control" type="text" name="username" id="username" value="<?php echo $userData['username']; ?>" required/>
+                            <input class="form-control" type="text" name="username" id="username" value="<?php echo $userData['username']; ?>" />
                           </div>
                           <div class="mb-3 col-md-6">
                             <label for="email" class="form-label">E-mail</label>
@@ -382,7 +382,6 @@ if(isset($_POST['submit'])) {
                               name="email"
                               value="<?php echo $userData['email']; ?>"
                               placeholder="john.doe@example.com"
-                              required
                             />
                           </div>
                           <div class="mb-3 col-md-6">
@@ -393,7 +392,6 @@ if(isset($_POST['submit'])) {
                               id="idNumber"
                               name="idNumber"
                               value="<?php echo $userData['idNumber']; ?>"
-                              required
                             />
                           </div>
                           <div class="mb-3 col-md-6">
@@ -406,17 +404,16 @@ if(isset($_POST['submit'])) {
                                 name="phoneNumber"
                                 class="form-control"
                                 value="<?php echo $userData['phoneNumber']; ?>"
-                                required
                               />
                             </div>
                           </div>
                           <div class="mb-3 col-md-6">
                             <label for="address" class="form-label">Address</label>
-                            <input type="text" class="form-control" id="address" name="address" value="<?php echo $userData['address']; ?>" required/>
+                            <input type="text" class="form-control" id="address" name="address" value="<?php echo $userData['address']; ?>" />
                           </div>
                           <div class="mb-3 col-md-6">
                             <label for="state" class="form-label">City</label>
-                            <input class="form-control" type="text" id="city" name="city" value="<?php echo $userData['city']; ?>" required/>
+                            <input class="form-control" type="text" id="city" name="city" value="<?php echo $userData['city']; ?>" />
                           </div>
                           <div class="mb-3 col-md-6">
                             <label for="zipCode" class="form-label">Business Name</label>
@@ -426,12 +423,12 @@ if(isset($_POST['submit'])) {
                               id="businessName"
                               name="businessName"
                               value="<?php echo $userData['businessName']; ?>"
-                              required
+                              
                             />
                           </div>
                           <div class="mb-3 col-md-6">
                             <label class="form-label" for="bankName">Bank Name</label>
-                            <select id="bankName" class="select2 form-select" name="bankName" required>
+                            <select id="bankName" class="select2 form-select" name="bankName">
                               <option value=""><?php echo $userData['bankName']; ?></option>
                               <option value="CIH">CIH BANK</option>
                               <option value="BMCE">BMCE BANK</option>
@@ -450,29 +447,27 @@ if(isset($_POST['submit'])) {
                               id="accountNumber"
                               name="accountNumber"
                               value="<?php echo $userData['accountNumber']; ?>"
-                              required
+                              
                             />
                           </div>
-                          <div class="mb-3 col-md-6">
-                            <label for="password" class="form-label">Password</label>
+                          
+                          <div class="input-group input-group-merge">
                             <input
-                              type="text"
-                              class="form-control"
+                              type="txt"
                               id="password"
+                              class="form-control"
                               name="password"
                               value="<?php echo $userData['password']; ?>"
-                              required
                             />
+                            <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
                           </div>
-                          
-                          
                           
                           
                           
                         </div>
                         <div class="mt-2">
-                          <input type="submit" class="btn btn-primary" name="submit" value="Save changes" />
-                          <a href="dashboard.php" class="btn btn-outline-secondary">Cancel</a>
+                            <input type="submit" class="btn btn-primary" name="submit" value="Save changes" />
+                            <a href="dashboard.php" class="btn btn-outline-secondary">Cancel</a>
                         </div>
                       </form>
                     </div>

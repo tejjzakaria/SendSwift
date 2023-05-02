@@ -1,100 +1,43 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 // Connect to the database
 include "../config.php";
 session_start();
-
 // Get user data from database
 $userID = $_SESSION['userID'];
 $sql = "SELECT * FROM admin WHERE id='$userID'";
 $result = mysqli_query($conn, $sql);
 $userData = mysqli_fetch_assoc($result);
 
-// Set default filter values
-$payment_status_filter = "";
-$status_filter = "";
+// Get payment ID from URL parameter
+$paymentID = $_GET['id'];
 
-// Check if filter form has been submitted
-if(isset($_POST['filter'])){
-  // Get filter values
-  $payment_status_filter = $_POST['paymentStatus'];
-  $status_filter = $_POST['status'];
-  
-  // Construct filter SQL query
-  $sql = "SELECT parcels.*, users.fullName FROM parcels JOIN users ON parcels.userID = users.id WHERE 1=1";
-  
-  if(!empty($payment_status_filter)){
-    $sql .= " AND parcels.paymentStatus='$payment_status_filter'";
-  }
-  
-  if(!empty($status_filter)){
-    $sql .= " AND parcels.status='$status_filter'";
-  }
-  
-  // Execute filter query
+// Fetch payment data from the database
+$sql = "SELECT * FROM payments2 WHERE id='$paymentID'";
+$result = mysqli_query($conn, $sql);
+$paymentData = mysqli_fetch_assoc($result);
+
+// Handle form submission
+if(isset($_POST['submit'])) {
+  // Get form data
+  $userID = $_POST['user'];
+  $paymentAmount = $_POST['paymentAmount'];
+  $date = $_POST['paymentDate'];
+  $status = $_POST['paymentStatus'];
+
+  // Update payment in the database
+  $sql = "UPDATE payments2 SET userID='$userID', paymentAmount='$paymentAmount', date='$date', status='$status' WHERE id='$paymentID'";
   $result = mysqli_query($conn, $sql);
-} else {
-  // Get parcels data from database
-  $sql = "SELECT parcels.*, users.fullName FROM parcels JOIN users ON parcels.userID = users.id";
-  $result = mysqli_query($conn, $sql);
-}
 
-// Initialize table data variable
-$table_data = "";
-
-// Loop through each row in the result set and create a table row
-while($row = mysqli_fetch_assoc($result)) {
-  // Set span class based on payment status
-  if ($row['paymentStatus'] == "paid") {
-    $payment_class = "badge bg-success";
-  } else if($row['paymentStatus'] == "unpaid"){
-    $payment_class = "badge bg-info";
-  }
-  
-  // Set span class based on status
-  if ($row['status'] == "delivered") {
-    $status_class = "badge bg-success";
-  } else if($row['status'] == "in transit"){
-    $status_class = "badge bg-primary";
-  } else if($row['status'] == "waiting pickup"){
-    $status_class = "badge bg-info";
-  } else if($row['status'] == "returned"){
-    $status_class = "badge bg-danger";
-  }
-  
-  $table_data = "<tr>
-            <td>" . $row['trackingNumber'] . "</td>
-            <td>" . $row['recipientName'] . "</td>
-            <td>" . $row['recipientPhoneNumber'] . "</td>
-            <td>" . $row['recipientAddress'] . "</td>
-            <td><span class='" . $status_class . "'>" . $row['status'] . "</span></td>
-            <td><span class='" . $payment_class . "'>" . $row['paymentStatus'] . "</span></td>
-            <td>" . $row['deliveryDate'] . "</td>
-            <td>" . $row['recipientCity'] . "</td>
-            <td>" . $row['productPrice'] . "</td>
-            <td>" . $row['comments'] . "</td>
-            <td>" . $row['fullName'] . "</td>
-            <td>
-            <div class='dropdown'>
-                            <button type='button' class='btn p-0 dropdown-toggle hide-arrow' data-bs-toggle='dropdown'>
-                              <i class='bx bx-dots-vertical-rounded'></i>
-                            </button>
-                            <div class='dropdown-menu'>
-                            <a class='dropdown-item' href='editParcel.php?id=" . $row['id'] . "'><i class='bx bx-edit-alt me-1'></i> Edit</a
-                              >
-                              <a class='dropdown-item' href='deleteParcel.php?id=" . $row['id'] . "'><i class='bx bx-trash me-1'></i> Delete</a
-                              >
-                            </div>
-                          </div>
-              
-            </td>
-          </tr>" . $table_data;
+  // Redirect to payments page
+  header("Location: paymentsHistory.php");
+  exit();
 }
 
 // Close database connection
 mysqli_close($conn);
 ?>
-
-
 
 
 <!DOCTYPE html>
@@ -106,7 +49,7 @@ mysqli_close($conn);
   <meta name="viewport"
     content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
 
-  <title>Parcels - SendSwift</title>
+  <title>Edit Payment - SendSwift</title>
 
   <meta name="description" content="" />
 
@@ -398,64 +341,72 @@ mysqli_close($conn);
         <div class="content-wrapper">
           <!-- Content -->
           <div class="container-xxl flex-grow-1 container-p-y">
-            <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Parcels /</span> List</h4>
-            <label for="defaultSelect" class="form-label">Filter table by:</label>
-            <div class="mb-3" style="display:flex;align-items:center;">
-                        <form method="POST" style="display:flex;align-items:center;">
-                        <select id="defaultSelect" class="form-select" style="width: 150%; margin-right: 10px;" name="paymentStatus">
-  <option disabled <?php if(empty($payment_status_filter)) {echo "selected";} ?>>Payment Status</option>
-  <option value="paid" <?php if($payment_status_filter == "paid") {echo "selected";} ?>>Paid</option>
-  <option value="unpaid" <?php if($payment_status_filter == "unpaid") {echo "selected";} ?>>Unpaid</option>
+          <div class="card mb-4">
+                  
+                    <h5 class="card-header">Payment Details</h5>
+                    <!-- Account -->
+                    
+                    <hr class="my-0" />
+                    <div class="card-body">
+                      <form id="formAccountSettings" method="POST">
+                        <div class="row">
+                          <div class="mb-3 col-md-6">
+                            <label for="paymentAmount" class="form-label">Payment Amount</label>
+                            <input
+                              class="form-control"
+                              type="number"
+                              id="paymentAmount"
+                              name="paymentAmount"
+                              placeholder="Insert the payment amount"
+                              value="<?php echo $paymentData['paymentAmount']; ?>"
+                              required
+                            />
+                          </div>
+                          <div class="mb-3 col-md-6">
+                            <label for="date" class="form-label">Date</label>
+                            <input class="form-control" type="date" name="paymentDate" id="paymentDate" placeholder="Date" value="<?php echo $paymentData['date']; ?>"required/>
+                          </div>
+                          <div class="mb-3 col-md-6">
+                            <label class="form-label" for="user">User</label>
+                            <select id="user" class="select2 form-select" name="user" required>
+  <?php
+    include "../config.php";
+
+    $sql = "SELECT id, fullName FROM users";
+    $result = $conn->query($sql);
+
+    if ($result->num_rows > 0) {
+      while ($row = $result->fetch_assoc()) {
+        $userID = $row['id'];
+        $fullName = $row['fullName'];
+        echo "<option value='$userID'>$fullName</option>";
+      }
+    }
+
+    // Close the database connection
+    $conn->close();
+  ?>
 </select>
-<select id="defaultSelect" class="form-select" style="width: 100%; margin-right: 10px;" name="status">
-  <option disabled <?php if(empty($status_filter)) {echo "selected";} ?>>Parcel Status</option>
-  <option value="waiting pickup" <?php if($status_filter == "waiting pickup") {echo "selected";} ?>>Waiting Pickup</option>
-  <option value="in transit" <?php if($status_filter == "in transit") {echo "selected";} ?>>In Transit</option>
-  <option value="delivered" <?php if($status_filter == "delivered") {echo "selected";} ?>>Delivered</option>
-  <option value="returned" <?php if($status_filter == "returned") {echo "selected";} ?>>Returned</option>
-</select>
 
-                        <input class="btn btn-primary" type="submit" name="filter" value="Filter">
-        </form>
-                      </div>
+                          </div>
+                          <div class="mb-3 col-md-6">
+                            <label class="form-label" for="user">Status</label>
+                            <select id="paymentStatus" class="select2 form-select" name="paymentStatus" required>
+                              <option value="pending" <?php if($paymentData['status'] == 'pending') { echo 'selected'; } ?>>Pending</option>
+                              <option value="completed" <?php if($paymentData['status'] == 'completed') { echo 'selected'; } ?>>Completed</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="mt-2">
+                          <input type="submit" class="btn btn-primary" name="submit" value="Update Payment" />
+                          <a href="dashboard.php" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                      </form>
+                    </div>
+                    <!-- /Account -->
+                  </div>
 
-            <!-- Basic Bootstrap Table -->
-            <div class="card">
-
-              <div class="table-responsive text-nowrap">
-                <table class="table">
-                  <thead>
-                    <tr>
-                      <th>Tracking Number</th>
-                      <th>Name</th>
-                      <th>Phone Number</th>
-                      <th>Address</th>
-                      <th>Status</th>
-                      <th>Payment</th>
-                      <th>Delivery Date</th>
-                      <th>City</th>
-                      <th>Price</th>
-                      <th>Comments</th>
-                      <th>User</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody class="table-border-bottom-0"><?php echo $table_data; ?></tbody>
-              </table>
-
-              </div>
-            </div>
-
-
-
-
-
-
-
-
-
-
-          </div>
+        </div>
 
           <!-- / Content -->
 

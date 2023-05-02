@@ -9,8 +9,28 @@ $sql = "SELECT * FROM users WHERE id='$userID'";
 $result = mysqli_query($conn, $sql);
 $userData = mysqli_fetch_assoc($result);
 
-$sql = "SELECT * FROM pickupRequests WHERE userID='$userID'";
-$result = mysqli_query($conn, $sql);
+// Set default filter values
+$requestStatus = "";
+
+// Check if form is submitted
+if(isset($_POST['filter'])) {
+  // Get filter values
+  $requestStatus = isset($_POST['requestStatus']) ? $_POST['requestStatus'] : "";
+  
+  // Create query with filter conditions
+  $query = "SELECT * FROM pickupRequests WHERE userID='$userID'";
+  if(!empty($requestStatus)) {
+    $query .= " AND requestStatus='$requestStatus'";
+  }
+  
+  
+  // Execute query
+  $result = mysqli_query($conn, $query);
+} else {
+  // If form is not submitted, fetch all parcels data
+  $query = "SELECT * FROM pickupRequests WHERE userID='$userID'";
+  $result = mysqli_query($conn, $query);
+}
 
 // Initialize table data variable
 $table_data = "";
@@ -191,7 +211,7 @@ mysqli_close($conn);
           <!-- Pickups -->
           <li class="menu-item <?php if (basename($_SERVER['PHP_SELF']) == 'addPickup.php') {
             echo 'active';
-          } ?> <?php if (basename($_SERVER['PHP_SELF']) == 'addPickup.php') {
+          } ?> <?php if (basename($_SERVER['PHP_SELF']) == 'pickupHistory.php') {
               echo 'open';
             } ?>">
             <a href="javascript:void(0)" class="menu-link menu-toggle">
@@ -215,7 +235,14 @@ mysqli_close($conn);
               </li>
             </ul>
           </li>
-
+          <li class="menu-item <?php if (basename($_SERVER['PHP_SELF']) == 'paymentsHistory.php') {
+            echo 'active';
+          } ?>">
+            <a href="paymentsHistory.php" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-dollar"></i>
+              <div data-i18n="Analytics">Payments</div>
+            </a>
+          </li>
           <!-- Support -->
           <li class="menu-item <?php if (basename($_SERVER['PHP_SELF']) == 'support.php') {
             echo 'active';
@@ -320,6 +347,18 @@ mysqli_close($conn);
           <!-- Content -->
           <div class="container-xxl flex-grow-1 container-p-y">
             <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Pickups /</span> List</h4>
+            <div class="mb-3" style="display:flex;align-items:center;">
+                        <form method="POST" style="display:flex;align-items:center;">
+                        <select id="defaultSelect" class="form-select" style="width: 150%; margin-right: 10px;" name="requestStatus">
+  <option disabled <?php if(empty($requestStatus)) {echo "selected";} ?>>Pickup Status</option>
+  <option value="completed" <?php if($requestStatus == "completed") {echo "selected";} ?>>Completed</option>
+  <option value="pending" <?php if($requestStatus == "pending") {echo "selected";} ?>>Pending</option>
+</select>
+
+
+                        <input class="btn btn-primary" type="submit" name="filter" value="Filter">
+        </form>
+                      </div>
 
             <!-- Basic Bootstrap Table -->
             <div class="card">

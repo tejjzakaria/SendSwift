@@ -1,7 +1,11 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 // Connect to the database
 include "../config.php";
 session_start();
+
+
 
 // Get user data from database
 $userID = $_SESSION['userID'];
@@ -9,33 +13,58 @@ $sql = "SELECT * FROM users WHERE id='$userID'";
 $result = mysqli_query($conn, $sql);
 $userData = mysqli_fetch_assoc($result);
 
-// Get parcels data from database
-$sql = "SELECT * FROM parcels WHERE userID='$userID'";
-$result = mysqli_query($conn, $sql);
+
+
+// Set default filter values
+$paymentStatus = "";
+$status = "";
+
+// Check if form is submitted
+if (isset($_POST['filter'])) {
+  // Get filter values
+  $paymentStatus = isset($_POST['paymentStatus']) ? $_POST['paymentStatus'] : "";
+  $status = isset($_POST['status']) ? $_POST['status'] : "";
+
+  // Create query with filter conditions
+  $query = "SELECT * FROM parcels WHERE userID='$userID'";
+  if (!empty($paymentStatus)) {
+    $query .= " AND paymentStatus='$paymentStatus'";
+  }
+  if (!empty($status)) {
+    $query .= " AND status='$status'";
+  }
+
+  // Execute query
+  $result = mysqli_query($conn, $query);
+} else {
+  // If form is not submitted, fetch all parcels data
+  $query = "SELECT * FROM parcels WHERE userID='$userID'";
+  $result = mysqli_query($conn, $query);
+}
 
 // Initialize table data variable
 $table_data = "";
 
 // Loop through each row in the result set and create a table row
-while($row = mysqli_fetch_assoc($result)) {
+while ($row = mysqli_fetch_assoc($result)) {
   // Set span class based on payment status
   if ($row['paymentStatus'] == "paid") {
-    $payment_class = "badge bg-label-success me-1";
-  } else if($row['paymentStatus'] == "unpaid"){
-    $payment_class = "badge bg-label-info me-1";
+    $payment_class = "badge bg-success";
+  } else if ($row['paymentStatus'] == "unpaid") {
+    $payment_class = "badge bg-info";
   }
-  
+
   // Set span class based on status
   if ($row['status'] == "delivered") {
-    $status_class = "badge bg-label-success me-1";
-  } else if($row['status'] == "in transit"){
-    $status_class = "badge bg-label-primary me-1";
-  } else if($row['status'] == "waiting pickup"){
-    $status_class = "badge bg-label-info me-1";
-  } else if($row['status'] == "returned"){
-    $status_class = "badge bg-label-warning me-1";
+    $status_class = "badge bg-success";
+  } else if ($row['status'] == "in transit") {
+    $status_class = "badge bg-primary";
+  } else if ($row['status'] == "waiting pickup") {
+    $status_class = "badge bg-info";
+  } else if ($row['status'] == "returned") {
+    $status_class = "badge bg-danger";
   }
-  
+
   $table_data = "<tr>
             <td>" . $row['trackingNumber'] . "</td>
             <td>" . $row['recipientName'] . "</td>
@@ -245,7 +274,14 @@ mysqli_close($conn);
               </li>
             </ul>
           </li>
-
+          <li class="menu-item <?php if (basename($_SERVER['PHP_SELF']) == 'paymentsHistory.php') {
+            echo 'active';
+          } ?>">
+            <a href="paymentsHistory.php" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-dollar"></i>
+              <div data-i18n="Analytics">Payments</div>
+            </a>
+          </li>
           <!-- Support -->
           <li class="menu-item <?php if (basename($_SERVER['PHP_SELF']) == 'support.php') {
             echo 'active';
@@ -350,6 +386,46 @@ mysqli_close($conn);
           <!-- Content -->
           <div class="container-xxl flex-grow-1 container-p-y">
             <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Parcels /</span> List</h4>
+            <label for="defaultSelect" class="form-label">Filter table by:</label>
+            <div class="mb-3" style="display:flex;align-items:center;">
+              <form method="POST" style="display:flex;align-items:center;">
+                <select id="defaultSelect" class="form-select" style="width: 150%; margin-right: 10px;"
+                  name="paymentStatus">
+                  <option disabled <?php if (empty($paymentStatus)) {
+                    echo "selected";
+                  } ?>>Payment Status</option>
+                  <option value="paid" <?php if ($paymentStatus == "paid") {
+                    echo "selected";
+                  } ?>>Paid</option>
+                  <option value="unpaid" <?php if ($paymentStatus == "unpaid") {
+                    echo "selected";
+                  } ?>>Unpaid</option>
+                </select>
+                <select id="defaultSelect" class="form-select" style="width: 100%; margin-right: 10px;" name="status">
+                  <option disabled <?php if (empty($status)) {
+                    echo "selected";
+                  } ?>>Parcel Status</option>
+                  <option value="waiting pickup" <?php if ($status == "waiting pickup") {
+                    echo "selected";
+                  } ?>>Waiting
+                    Pickup</option>
+                  <option value="in transit" <?php if ($status == "in transit") {
+                    echo "selected";
+                  } ?>>In Transit</option>
+                  <option value="delivered" <?php if ($status == "delivered") {
+                    echo "selected";
+                  } ?>>Delivered</option>
+                  <option value="returned" <?php if ($status == "returned") {
+                    echo "selected";
+                  } ?>>Returned</option>
+                </select>
+
+                <input class="btn btn-primary" type="submit" name="filter" value="Filter">
+              </form>
+            </div>
+
+
+
 
             <!-- Basic Bootstrap Table -->
             <div class="card">
@@ -371,8 +447,10 @@ mysqli_close($conn);
                       <th>Actions</th>
                     </tr>
                   </thead>
-                  <tbody class="table-border-bottom-0"><?php echo $table_data; ?></tbody>
-              </table>
+                  <tbody class="table-border-bottom-0">
+                    <?php echo $table_data; ?>
+                  </tbody>
+                </table>
 
               </div>
             </div>
@@ -385,8 +463,9 @@ mysqli_close($conn);
 
 
 
-
           </div>
+
+
 
           <!-- / Content -->
 
@@ -443,6 +522,7 @@ mysqli_close($conn);
   <!-- Place this tag in your head or just before your close body tag. -->
   <script async defer src="https://buttons.github.io/buttons.js"></script>
 
+  
 
 
 </body>

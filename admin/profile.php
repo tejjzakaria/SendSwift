@@ -9,37 +9,11 @@ ini_set('display_errors', 1);
 
 // Get user data from database
 $userID = $_SESSION['userID'];
-$sql = "SELECT * FROM users WHERE id='$userID'";
+$sql = "SELECT * FROM admin WHERE id='$userID'";
 $result = mysqli_query($conn, $sql);
 $userData = mysqli_fetch_assoc($result);
 
 
-if(isset($_POST['submit'])) {
-    // Retrieve form data
-    $email = $_POST['email'];
-    $password = $_POST['password'];
-    $username = $_POST['username'];
-    $fullName = $_POST['fullName'];
-    $idNumber = $_POST['idNumber'];
-    $phoneNumber = $_POST['phoneNumber'];
-    $businessName = $_POST['businessName'];
-    $city = $_POST['city'];
-    $address = $_POST['address'];
-    $websiteLink = $_POST['websiteLink'];
-    $bankName = $_POST['bankName'];
-    $accountNumber = $_POST['accountNumber'];
-
-    // Update user data in users table
-    $sql = "UPDATE users SET email='$email', password='$password', username='$username', fullName='$fullName', idNumber='$idNumber', phoneNumber='$phoneNumber', businessName='$businessName', city='$city', address='$address', websiteLink='$websiteLink', bankName='$bankName', accountNumber='$accountNumber' WHERE id='$userID'";
-    if (mysqli_query($conn, $sql)) {
-      
-        header("Location: profileUpdateSuccess.php" );
-    } else {
-        echo "Error: " . $sql . "<br>" . mysqli_error($conn);
-    }
-    // Close database connection
-    mysqli_close($conn);
-}
 ?>
 
 
@@ -172,27 +146,38 @@ if(isset($_POST['submit'])) {
           </li>
 
           <!-- Parcels -->
-          <li class="menu-item <?php if (basename($_SERVER['PHP_SELF']) == 'viewParcels.php' || basename($_SERVER['PHP_SELF']) == 'addNewParcel.php') {
+          <li class="menu-item <?php if (basename($_SERVER['PHP_SELF']) == 'viewParcels.php') {
             echo 'active';
-          } ?> <?php if (basename($_SERVER['PHP_SELF']) == 'viewParcels.php' || basename($_SERVER['PHP_SELF']) == 'addNewParcel.php') {
+          } ?>">
+            <a href="viewParcels.php" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-box"></i>
+              <div data-i18n="Analytics">Parcels List</div>
+            </a>
+          </li>
+          
+
+
+          <li class="menu-item <?php if (basename($_SERVER['PHP_SELF']) == 'viewUsers.php' || basename($_SERVER['PHP_SELF']) == 'addNewUser.php') {
+            echo 'active';
+          } ?> <?php if (basename($_SERVER['PHP_SELF']) == 'viewUsers.php' || basename($_SERVER['PHP_SELF']) == 'addNewUser.php') {
               echo 'open';
             } ?>">
             <a href="javascript:void(0)" class="menu-link menu-toggle">
-              <i class="menu-icon tf-icons bx bx-box"></i>
-              <div data-i18n="User interface">Parcels</div>
+              <i class="menu-icon tf-icons bx bx-user"></i>
+              <div data-i18n="User interface">Users</div>
             </a>
             <ul class="menu-sub">
-              <li class="menu-item <?php if (basename($_SERVER['PHP_SELF']) == 'viewParcels.php') {
+              <li class="menu-item <?php if (basename($_SERVER['PHP_SELF']) == 'viewUsers.php') {
                 echo 'active';
               } ?>">
-                <a href="viewParcels.php" class="menu-link">
-                  <div data-i18n="Accordion">List parcels</div>
+                <a href="viewUsers.php" class="menu-link">
+                  <div data-i18n="Accordion">List users</div>
                 </a>
               </li>
-              <li class="menu-item <?php if (basename($_SERVER['PHP_SELF']) == 'addNewParcel.php') {
+              <li class="menu-item <?php if (basename($_SERVER['PHP_SELF']) == 'addNewUser.php') {
                 echo 'active';
               } ?>">
-                <a href="addNewParcel.php" class="menu-link">
+                <a href="addNewUser.php" class="menu-link">
                   <div data-i18n="Alerts">Add new</div>
                 </a>
               </li>
@@ -200,40 +185,44 @@ if(isset($_POST['submit'])) {
           </li>
 
           <!-- Pickups -->
-          <li class="menu-item <?php if (basename($_SERVER['PHP_SELF']) == 'addPickup.php') {
+          <li class="menu-item <?php if (basename($_SERVER['PHP_SELF']) == 'pickupHistory.php') {
             echo 'active';
-          } ?> <?php if (basename($_SERVER['PHP_SELF']) == 'addPickup.php') {
+          } ?>">
+            <a href="pickupHistory.php" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-map"></i>
+              <div data-i18n="Analytics">Pickup Requests</div>
+            </a>
+          </li>
+
+
+          <li class="menu-item <?php if (basename($_SERVER['PHP_SELF']) == 'paymentsHistory.php' || basename($_SERVER['PHP_SELF']) == 'addNewPayment.php') {
+            echo 'active';
+          } ?> <?php if (basename($_SERVER['PHP_SELF']) == 'paymentsHistory.php' || basename($_SERVER['PHP_SELF']) == 'addNewPayment.php') {
               echo 'open';
             } ?>">
             <a href="javascript:void(0)" class="menu-link menu-toggle">
-              <i class="menu-icon tf-icons bx bx-map"></i>
-              <div data-i18n="User interface">Pickups</div>
+              <i class="menu-icon tf-icons bx bx-wallet"></i>
+              <div data-i18n="User interface">Payments</div>
             </a>
             <ul class="menu-sub">
-              <li class="menu-item <?php if (basename($_SERVER['PHP_SELF']) == 'addPickup.php') {
+              <li class="menu-item <?php if (basename($_SERVER['PHP_SELF']) == 'paymentsHistory.php') {
                 echo 'active';
               } ?>">
-                <a href="addPickup.php" class="menu-link">
-                  <div data-i18n="Accordion">Request a pickup</div>
+                <a href="paymentsHistory.php" class="menu-link">
+                  <div data-i18n="Accordion">Payments History</div>
                 </a>
               </li>
-              <li class="menu-item <?php if (basename($_SERVER['PHP_SELF']) == 'pickupHistory.php') {
+              <li class="menu-item <?php if (basename($_SERVER['PHP_SELF']) == 'addNewPayment.php') {
                 echo 'active';
               } ?>">
-                <a href="pickupHistory.php" class="menu-link">
-                  <div data-i18n="Alerts">Pickup History</div>
+                <a href="addNewPayment.php" class="menu-link">
+                  <div data-i18n="Alerts">Add new</div>
                 </a>
               </li>
             </ul>
           </li>
-          <li class="menu-item <?php if (basename($_SERVER['PHP_SELF']) == 'paymentsHistory.php') {
-            echo 'active';
-          } ?>">
-            <a href="paymentsHistory.php" class="menu-link">
-              <i class="menu-icon tf-icons bx bx-dollar"></i>
-              <div data-i18n="Analytics">Payments</div>
-            </a>
-          </li>
+          
+
           <!-- Support -->
           <li class="menu-item <?php if (basename($_SERVER['PHP_SELF']) == 'support.php') {
             echo 'active';
@@ -299,8 +288,8 @@ if(isset($_POST['submit'])) {
                             </div>
                           </div>
                           <div class="flex-grow-1">
-                            <span class="fw-semibold d-block"><?php echo $userData['fullName']; ?></span>
-                            <small class="text-muted"><?php echo $userData['businessName']; ?></small>
+                            <span class="fw-semibold d-block"><?php echo $userData['username']; ?></span>
+                            <small class="text-muted"><?php echo $userData['email']; ?></small>
                           </div>
                         </div>
                       </a>
@@ -338,175 +327,46 @@ if(isset($_POST['submit'])) {
           <div class="content-wrapper">
             <!-- Content -->
             <div class="container-xxl flex-grow-1 container-p-y">
-              <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Account Settings /</span> Account</h4>
-
-              <div class="row">
-                <div class="col-md-12">
-                  <ul class="nav nav-pills flex-column flex-md-row mb-3">
-                    <li class="nav-item">
-                      <a class="nav-link active" href="javascript:void(0);"><i class="bx bx-user me-1"></i> Account</a>
-                    </li>
-                    
-                    
-                  </ul>
+            <div class="col-xxl">
                   <div class="card mb-4">
-                  
-                    <h5 class="card-header">Profile Details</h5>
-                    <!-- Account -->
+                    <div class="card-header d-flex align-items-center justify-content-between">
+                      <h5 class="mb-0">Admin Account</h5>
+                      <small class="text-muted float-end">Admin Account Overview</small>
+                    </div>
+                    <div class="card-body">
+                      <form>
+                        <div class="row mb-3">
+                          <label class="col-sm-2 col-form-label" for="basic-default-name">Username :</label>
+                          <div class="col-sm-10">
+                            <label class="col-sm-2 col-form-label" for="basic-default-name"><?php echo $userData['username']; ?></label>
+                          </div>
+                        </div>
+
+                        <div class="row mb-3">
+                          <label class="col-sm-2 col-form-label" for="basic-default-name">Email :</label>
+                          <div class="col-sm-10">
+                            <label class="col-sm-2 col-form-label" for="basic-default-name"><?php echo $userData['email']; ?></label>
+                          </div>
+                        </div>
+
+                        <div class="row mb-3">
+                          <label class="col-sm-2 col-form-label" for="basic-default-name">Password :</label>
+                          <div class="col-sm-10">
+                            <label class="col-sm-2 col-form-label" for="basic-default-name"><?php echo $userData['password']; ?></label>
+                          </div>
+                        </div>
+                        
+                        
+                        
+                        
+                        
+                      </form>
+                    </div>
                     
-                    <hr class="my-0" />
-                    <div class="card-body">
-                      <form id="formAccountSettings" method="POST">
-                        <div class="row">
-                          <div class="mb-3 col-md-6">
-                            <label for="firstName" class="form-label">Full Name</label>
-                            <input
-                              class="form-control"
-                              type="text"
-                              id="fullName"
-                              name="fullName"
-                              value="<?php echo $userData['fullName']; ?>"
-                              required
-                            />
-                          </div>
-                          <div class="mb-3 col-md-6">
-                            <label for="lastName" class="form-label">Username</label>
-                            <input class="form-control" type="text" name="username" id="username" value="<?php echo $userData['username']; ?>" required/>
-                          </div>
-                          <div class="mb-3 col-md-6">
-                            <label for="email" class="form-label">E-mail</label>
-                            <input
-                              class="form-control"
-                              type="text"
-                              id="email"
-                              name="email"
-                              value="<?php echo $userData['email']; ?>"
-                              placeholder="john.doe@example.com"
-                              required
-                            />
-                          </div>
-                          <div class="mb-3 col-md-6">
-                            <label for="organization" class="form-label">ID Number</label>
-                            <input
-                              type="text"
-                              class="form-control"
-                              id="idNumber"
-                              name="idNumber"
-                              value="<?php echo $userData['idNumber']; ?>"
-                              required
-                            />
-                          </div>
-                          <div class="mb-3 col-md-6">
-                            <label class="form-label" for="phoneNumber">Phone Number</label>
-                            <div class="input-group input-group-merge">
-                              <span class="input-group-text">MA (+212)</span>
-                              <input
-                                type="text"
-                                id="phoneNumber"
-                                name="phoneNumber"
-                                class="form-control"
-                                value="<?php echo $userData['phoneNumber']; ?>"
-                                required
-                              />
-                            </div>
-                          </div>
-                          <div class="mb-3 col-md-6">
-                            <label for="address" class="form-label">Address</label>
-                            <input type="text" class="form-control" id="address" name="address" value="<?php echo $userData['address']; ?>" required/>
-                          </div>
-                          <div class="mb-3 col-md-6">
-                            <label for="state" class="form-label">City</label>
-                            <input class="form-control" type="text" id="city" name="city" value="<?php echo $userData['city']; ?>" required/>
-                          </div>
-                          <div class="mb-3 col-md-6">
-                            <label for="zipCode" class="form-label">Business Name</label>
-                            <input
-                              type="text"
-                              class="form-control"
-                              id="businessName"
-                              name="businessName"
-                              value="<?php echo $userData['businessName']; ?>"
-                              required
-                            />
-                          </div>
-                          <div class="mb-3 col-md-6">
-                            <label class="form-label" for="bankName">Bank Name</label>
-                            <select id="bankName" class="select2 form-select" name="bankName" required>
-                              <option value=""><?php echo $userData['bankName']; ?></option>
-                              <option value="CIH">CIH BANK</option>
-                              <option value="BMCE">BMCE BANK</option>
-                              <option value="BMCI">BMCI BANK</option>
-                              <option value="ATTIJARIWAFA">ATTIJARIWAFA BANK</option>
-                              <option value="BANK POPULAIRE">BANK POPULAIRE</option>
-                              <option value="BARID BANK">BARID BANK</option>
-                              <option value="CREDIT DE MAROC">CREDIT DE MAROC</option>
-                            </select>
-                          </div>
-                          <div class="mb-3 col-md-6">
-                            <label for="accountNumber" class="form-label">Account Number</label>
-                            <input
-                              type="text"
-                              class="form-control"
-                              id="accountNumber"
-                              name="accountNumber"
-                              value="<?php echo $userData['accountNumber']; ?>"
-                              required
-                            />
-                          </div>
-                          <div class="mb-3 col-md-6">
-                            <label for="password" class="form-label">Password</label>
-                            <input
-                              type="text"
-                              class="form-control"
-                              id="password"
-                              name="password"
-                              value="<?php echo $userData['password']; ?>"
-                              required
-                            />
-                          </div>
-                          
-                          
-                          
-                          
-                          
-                        </div>
-                        <div class="mt-2">
-                          <input type="submit" class="btn btn-primary" name="submit" value="Save changes" />
-                          <a href="dashboard.php" class="btn btn-outline-secondary">Cancel</a>
-                        </div>
-                      </form>
-                    </div>
-                    <!-- /Account -->
                   </div>
-                  <div class="card">
-                    <h5 class="card-header">Delete Account</h5>
-                    <div class="card-body">
-                      <div class="mb-3 col-12 mb-0">
-                        <div class="alert alert-warning">
-                          <h6 class="alert-heading fw-bold mb-1">Are you sure you want to delete your account?</h6>
-                          <p class="mb-0">Once you delete your account, there is no going back. Please be certain.</p>
-                        </div>
-                      </div>
-                      <form id="formAccountDeactivation" onsubmit="return false">
-                        <div class="form-check mb-3">
-                          <input
-                            class="form-check-input"
-                            type="checkbox"
-                            name="accountActivation"
-                            id="accountActivation"
-                          />
-                          <label class="form-check-label" for="accountActivation"
-                            >I confirm my account deactivation</label
-                          >
-                        </div>
-                        <a href="deleteUser.php" class="btn btn-danger deactivate-account">Deactivate Account</a>
-                      </form>
-                    </div>
-                  </div>
+                  
                 </div>
-              </div>
-            </div>
-            
+                </div>
             <!-- / Content -->
             
 

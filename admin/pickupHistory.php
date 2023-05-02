@@ -9,7 +9,28 @@ $sql = "SELECT * FROM admin WHERE id='$userID'";
 $result = mysqli_query($conn, $sql);
 $userData = mysqli_fetch_assoc($result);
 
+// Initialize query and filter variables
 $sql = "SELECT pickupRequests.*, users.fullName FROM pickupRequests JOIN users ON pickupRequests.userID = users.id";
+$filter = "";
+$pickup_status_filter = "";
+
+// Check if filter form was submitted
+if (isset($_POST['filter'])) {
+  // Get selected pickup status filter
+  $pickup_status_filter = $_POST['pickupStatus'];
+  
+  // Add filter to SQL query if not empty
+  if (!empty($pickup_status_filter)) {
+    $filter .= "WHERE requestStatus = '$pickup_status_filter'";
+  }
+}
+
+// Add filter to SQL query if not empty
+if (!empty($filter)) {
+  $sql .= " " . $filter;
+}
+
+// Execute SQL query
 $result = mysqli_query($conn, $sql);
 
 // Initialize table data variable
@@ -24,9 +45,7 @@ while($row = mysqli_fetch_assoc($result)) {
     $payment_class = "badge bg-label-info me-1";
   }
   
-  
-  
-  $table_data = "<tr>
+  $table_data .= "<tr>
             <td>" . $row['pickupDate'] . "</td>
             <td>" . $row['pickupAddress'] . "</td>
             <td>" . $row['parcelsToBePickedup'] . "</td>
@@ -36,7 +55,7 @@ while($row = mysqli_fetch_assoc($result)) {
                 <a href='editPickupRequest.php?id=" . $row['id'] . "'>Edit</a> |
                 <a href='deletePickupRequest.php?id=" . $row['id'] . "'>Delete</a>
             </td>
-          </tr>" . $table_data;
+          </tr>";
 }
 
 // Close database connection
@@ -212,6 +231,35 @@ mysqli_close($conn);
             </a>
           </li>
 
+
+          <li class="menu-item <?php if (basename($_SERVER['PHP_SELF']) == 'paymentsHistory.php' || basename($_SERVER['PHP_SELF']) == 'addNewPayment.php') {
+            echo 'active';
+          } ?> <?php if (basename($_SERVER['PHP_SELF']) == 'paymentsHistory.php' || basename($_SERVER['PHP_SELF']) == 'addNewPayment.php') {
+              echo 'open';
+            } ?>">
+            <a href="javascript:void(0)" class="menu-link menu-toggle">
+              <i class="menu-icon tf-icons bx bx-wallet"></i>
+              <div data-i18n="User interface">Payments</div>
+            </a>
+            <ul class="menu-sub">
+              <li class="menu-item <?php if (basename($_SERVER['PHP_SELF']) == 'paymentsHistory.php') {
+                echo 'active';
+              } ?>">
+                <a href="paymentsHistory.php" class="menu-link">
+                  <div data-i18n="Accordion">Payments History</div>
+                </a>
+              </li>
+              <li class="menu-item <?php if (basename($_SERVER['PHP_SELF']) == 'addNewPayment.php') {
+                echo 'active';
+              } ?>">
+                <a href="addNewPayment.php" class="menu-link">
+                  <div data-i18n="Alerts">Add new</div>
+                </a>
+              </li>
+            </ul>
+          </li>
+          
+
           <!-- Support -->
           <li class="menu-item <?php if (basename($_SERVER['PHP_SELF']) == 'support.php') {
             echo 'active';
@@ -315,7 +363,19 @@ mysqli_close($conn);
         <div class="content-wrapper">
           <!-- Content -->
           <div class="container-xxl flex-grow-1 container-p-y">
-            <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Parcels /</span> List</h4>
+            <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Pickups /</span> List</h4>
+            <div class="mb-3" style="display:flex;align-items:center;">
+                        <form method="POST" style="display:flex;align-items:center;">
+                        <select id="defaultSelect" class="form-select" style="width: 150%; margin-right: 10px;" name="pickupStatus">
+  <option disabled <?php if(empty($pickup_status_filter)) {echo "selected";} ?>>Pickup Status</option>
+  <option value="completed" <?php if($pickup_status_filter == "completed") {echo "selected";} ?>>Completed</option>
+  <option value="pending" <?php if($pickup_status_filter == "pending") {echo "selected";} ?>>Pending</option>
+</select>
+
+
+                        <input class="btn btn-primary" type="submit" name="filter" value="Filter">
+        </form>
+                      </div>
 
             <!-- Basic Bootstrap Table -->
             <div class="card">

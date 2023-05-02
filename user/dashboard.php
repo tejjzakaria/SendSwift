@@ -32,6 +32,13 @@ $sql = "SELECT COUNT(*) AS waitingPickup FROM parcels WHERE userID='$userID' AND
 $result = mysqli_query($conn, $sql);
 $waitingPickupParcels = mysqli_fetch_assoc($result)['waitingPickup'];
 
+// Calculate delivery rate based on returned parcels
+$deliveryRate = 0;
+if ($returnedParcels < $deliveredParcels) {
+  $deliveryRate = round((($deliveredParcels - $returnedParcels) / $deliveredParcels) * 100, 2);
+}
+
+
 // Check if search query is submitted
 if (isset($_GET['search'])) {
   $searchQuery = mysqli_real_escape_string($conn, $_GET['search']);
@@ -226,7 +233,14 @@ mysqli_close($conn);
               </li>
             </ul>
           </li>
-
+          <li class="menu-item <?php if (basename($_SERVER['PHP_SELF']) == 'paymentsHistory.php') {
+            echo 'active';
+          } ?>">
+            <a href="paymentsHistory.php" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-dollar"></i>
+              <div data-i18n="Analytics">Payments</div>
+            </a>
+          </li>
           <!-- Support -->
           <li class="menu-item <?php if (basename($_SERVER['PHP_SELF']) == 'support.php') {
             echo 'active';
@@ -432,26 +446,32 @@ mysqli_close($conn);
             </div>
             <!-- Order Statistics -->
             <div class="col-md-6 col-lg-4 col-xl-4 order-0 mb-4" style="width: 100%;">
-              <div class="card h-100">
-                <div class="card-header d-flex align-items-center justify-content-between pb-0">
-                  <div class="card-title mb-0">
-                    <h5 class="m-0 me-2">General Statistics</h5>
-                    <small class="text-muted">Here is your stats</small>
-                  </div>
+  <div class="card h-100">
+    <div class="card-header d-flex align-items-center justify-content-between pb-0">
+      <div class="card-title mb-0">
+        <h5 class="m-0 me-2">General Statistics</h5>
+        <small class="text-muted">Here is your stats</small>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="d-flex flex-column align-items-center gap-1">
+          <h2 class="mb-2"><?php echo $totalParcels ?></h2>
+          <span>Total Parcels</span>
+        </div>
+        <div class="d-flex justify-content-center pt-4 gap-2 align-items-center">
+          <div>
+            <p class="mb-n1 mt-1">Delivery Rate</p>
+          </div>
+          <div class="flex-shrink-0">
+            <div id="expensesOfWeek"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
-                </div>
-                <div class="card-body">
-                  <div class="d-flex justify-content-between align-items-center mb-3">
-                    <div class="d-flex flex-column align-items-center gap-1">
-                      <h2 class="mb-2"><?php echo $totalParcels ?></h2>
-                      <span>Total Parcels</span>
-                    </div>
-                    <div id="orderStatisticsChart"></div>
-                  </div>
-
-                </div>
-              </div>
-            </div>
             <!--/ Order Statistics -->
           </div>
 
@@ -510,6 +530,99 @@ mysqli_close($conn);
 
   <!-- Place this tag in your head or just before your close body tag. -->
   <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+
+
+  <script>
+  (function () {
+    let cardColor, headingColor, axisColor, shadeColor, borderColor;
+
+    cardColor = config.colors.white;
+    headingColor = config.colors.headingColor;
+    axisColor = config.colors.axisColor;
+    borderColor = config.colors.borderColor;
+
+    // Define delivery rate
+    const deliveryRate = <?php echo $deliveryRate; ?>;
+
+    const weeklyExpensesEl = document.querySelector('#expensesOfWeek'),
+      weeklyExpensesConfig = {
+        series: [deliveryRate],
+        chart: {
+          width: 60,
+          height: 60,
+          type: 'radialBar'
+        },
+        plotOptions: {
+          radialBar: {
+            startAngle: 0,
+            endAngle: 360,
+            strokeWidth: '8',
+            hollow: {
+              margin: 2,
+              size: '45%'
+            },
+            track: {
+              strokeWidth: '50%',
+              background: borderColor
+            },
+            dataLabels: {
+              show: true,
+              name: {
+                show: false
+              },
+              value: {
+                formatter: function (val) {
+                  return val + '%';
+                },
+                offsetY: 5,
+                color: '#697a8d',
+                fontSize: '13px',
+                show: true
+              }
+            }
+          }
+        },
+        fill: {
+          type: 'solid',
+          colors: config.colors.primary
+        },
+        stroke: {
+          lineCap: 'round'
+        },
+        grid: {
+          padding: {
+            top: -10,
+            bottom: -15,
+            left: -10,
+            right: -10
+          }
+        },
+        states: {
+          hover: {
+            filter: {
+              type: 'none'
+            }
+          },
+          active: {
+            filter: {
+              type: 'none'
+            }
+          }
+        }
+      };
+
+    if (typeof weeklyExpensesEl !== undefined && weeklyExpensesEl !== null) {
+      const weeklyExpenses = new ApexCharts(weeklyExpensesEl, weeklyExpensesConfig);
+      weeklyExpenses.render();
+    }
+  })();
+</script>
+
+
+
+  
 </body>
 
 </html>

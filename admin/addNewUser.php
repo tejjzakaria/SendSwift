@@ -221,6 +221,35 @@ if(isset($_POST['submit'])) {
             </a>
           </li>
 
+
+          <li class="menu-item <?php if (basename($_SERVER['PHP_SELF']) == 'paymentsHistory.php' || basename($_SERVER['PHP_SELF']) == 'addNewPayment.php') {
+            echo 'active';
+          } ?> <?php if (basename($_SERVER['PHP_SELF']) == 'paymentsHistory.php' || basename($_SERVER['PHP_SELF']) == 'addNewPayment.php') {
+              echo 'open';
+            } ?>">
+            <a href="javascript:void(0)" class="menu-link menu-toggle">
+              <i class="menu-icon tf-icons bx bx-wallet"></i>
+              <div data-i18n="User interface">Payments</div>
+            </a>
+            <ul class="menu-sub">
+              <li class="menu-item <?php if (basename($_SERVER['PHP_SELF']) == 'paymentsHistory.php') {
+                echo 'active';
+              } ?>">
+                <a href="paymentsHistory.php" class="menu-link">
+                  <div data-i18n="Accordion">Payments History</div>
+                </a>
+              </li>
+              <li class="menu-item <?php if (basename($_SERVER['PHP_SELF']) == 'addNewPayment.php') {
+                echo 'active';
+              } ?>">
+                <a href="addNewPayment.php" class="menu-link">
+                  <div data-i18n="Alerts">Add new</div>
+                </a>
+              </li>
+            </ul>
+          </li>
+          
+
           <!-- Support -->
           <li class="menu-item <?php if (basename($_SERVER['PHP_SELF']) == 'support.php') {
             echo 'active';

@@ -79,7 +79,7 @@ if (isset($_POST['submit'])) {
       content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
     />
 
-    <title>Register</title>
+    <title>Register - SendSwift</title>
 
     <meta name="description" content="" />
 
